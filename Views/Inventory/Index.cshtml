@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model IAsyncEnumerable<WebSalesTracker.Models.Inventory>
+
+<h2>Put something up for sale</h2>
+<form action="NewInventory" class="new-inventory">
+    <label for="newItem">Item: </label>
+    <input type="text" name="newItem" class="clear-input" />
+    <label for="newCost">Cost: </label>
+    <input type="number" name="newCost" class="clear-input" />
+    <label for="newSalePrice">SalePrice: </label>
+    <input type="number" name="newSalePrice" class="clear-input" />
+    <button type="submit">Submit</button>
+</form>
+<div id="new-inventory-results"></div>
+
+<form action="ShowList" class="show-database">
+    <button type="submit">Show Inventory</button>
+</form>
+<div id="database-list"></div>
+
+<script type="text/javascript">
+    $('.new-inventory').submit(function (event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: '@Url.Action("NewInventory")',
+            type: 'POST',
+            dataType: 'json',
+            data: $(this).serialize(),
+            success: function (result) {
+                var resultMessage = 'You\'ve added a new inventory to the database!<br>InventoryId: ' + result.inventoryId + '<br>Item: ' + result.item + '<br>Cost: ' + result.cost + '<br>SalePrice: ' + result.salePrice;
+                $('#new-inventory-results').html(resultMessage);
+                for (var i = 0; i < result.length; i++) {
+                    resultString += '<li>' + '<br>Item: ' + result[i].item + '<br>cost: ' + result[i].cost + '<br>salePrice: ' + result[i].salePrice + '</li>';
+                }
+            }
+        });
+        $('.clear-input').val("");
+    });
+        $(document).ready(function () {
+        $('.show-database').submit(function () {
+            event.preventDefault();
+            $.ajax({
+                type: 'GET',
+                data: $(this).serialize(),
+                dataType: 'json',
+                url: '@Url.Action("ShowList")',
+                success: function (result) {
+                    var resultString = '<ul>';
+                    for (var i = 0; i < result.length; i++) {
+                        resultString += '<li>' + '<br>Item: ' + result[i].item + '<br>cost: ' + result[i].cost + '<br>salePrice: ' + result[i].salePrice + '</li>';
+                    }
+                    resultString += '</ul>';
+                    $('#database-list').html(resultString);
+                }
+            });
+        });
+      });
+</script>

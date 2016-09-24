@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using System.Security.Claims
+
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p>Oh hello, @User.Identity.Name</p>
+
+    @using (Html.BeginForm("LogOff", "Home"))
+    {
+        <input type="submit" class="btn btn-default" value="Logoff" />    
+    }
+    <a href="/Inventory">Inventory</a>
+}
+else
+{
+    <h2>Authentication with Identity</h2>
+    <button class="display-register">Click here to register</button>
+    <div id="register-form"></div>
+    <button class="display-login">Click here to login</button>
+    <div id="login-form"></div>
+    <hr />
+<script type="text/javascript">
+    $('.display-login').click(function () {
+        $.ajax({
+            type: 'GET',
+            dataType: 'html',
+            url: '@Url.Action("Login")',
+            success: function (result) {
+                $('#login-form').html(result);
+            }
+        });
+    });
+$('.display-register').click(function () {
+    $.ajax({
+        type: 'GET',
+        dataType: 'html',
+        url: '@Url.Action("Register")',
+        success: function (result) {
+        $('#register-form').html(result);
+        }
+    });
+});
+    </script>
+}
+
+
+
